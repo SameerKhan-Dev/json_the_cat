@@ -1,38 +1,38 @@
 
 const request = require('request');
 
-// store the breedType from the user command line input
-let breedType = process.argv[2];
 
-let destination = `https://api.thecatapi.com/v1/breeds/search?q=${breedType}`;
 
-request(destination, (error, response, body) => {
-  
-  if (error) {
 
-    console.log('error', error);
-    
-  } else if (body === "[]") {
-      
-    console.log("Error: breed type not specified or not found!");
-  } else {
+const fetchBreedDescription = function(breedName, callback) {
+  // request data from destination, request will call the callback function that we are specifying below.
+  let destination = `https://api.thecatapi.com/v1/breeds/search?q=${breedName}`;
 
-    const data = JSON.parse(body);
-    console.log(data[0].description);
-  }
-  /*
-  console.log('error:', error); // Print the error if one occurred
-  console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-  console.log('body:', body); // Print the HTML for the Google homepage.
-  */
-  
-  //console.log(typeof body);
-  //console.log(body);
+  request(destination, (error, response, body) => {
 
-  // deserialize the data that is in JSON format
-    
-  //console.log(data);
-  //console.log(typeof data);
+    if (error) {
 
-  // per instructions: Access the first entry in the data array and print out the description for the user
-});
+      // call the callback function to print error if error occurred, description is null because error occurred.
+      callback(error, null);
+
+    } else if (body === "[]") {
+      // if body is empty array means breed type not specified or not found.
+      //console.log("Error: breed type not specified or not found!");
+      const err = "breed type not specified or not found!";
+      const desc = null;
+      callback(err, desc);
+
+    } else {
+      // call the callback function because no error but send in the value of null representing success and the description to print.
+      const data = JSON.parse(body);
+      const description = data[0].description;
+      callback(null, description);
+    }
+
+  });
+
+};
+
+module.exports = { fetchBreedDescription };
+
+
